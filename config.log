@@ -1,0 +1,31 @@
+gcc /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -ldl -lm -lpthread
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -ldl -lm -lpthread -lz
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -lpng -ldl -lm -lpthread -lz
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -lpng -ldl -lm -lpthread -lz
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -lpng -ldl -lm -lpthread -lz -lasound
+/tmp/pcsx-conf--820-.c:1:30: fatal error: alsa/asoundlib.h: No such file or directory
+   #include <alsa/asoundlib.h>
+                              ^
+compilation terminated.
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -lpng -ldl -lm -lpthread -lz -lpulse
+/tmp/pcsx-conf--820-.c:1:32: fatal error: pulse/pulseaudio.h: No such file or directory
+   #include <pulse/pulseaudio.h>
+                                ^
+compilation terminated.
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED -I/media/BBB//include/SDL -D_GNU_SOURCE=1 -D_REENTRANT /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -L/media/BBB//lib -Wl,-rpath,/media/BBB//lib -lSDL -lpthread -lpng -ldl -lm -lpthread -lz
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED -I/media/BBB//include/SDL -D_GNU_SOURCE=1 -D_REENTRANT -c /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820-.o
+/tmp/pcsx-conf--820-.c:1:21: fatal error: tslib.h: No such file or directory
+   #include <tslib.h>
+                     ^
+compilation terminated.
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED -I/media/BBB//include/SDL -D_GNU_SOURCE=1 -D_REENTRANT /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -L/media/BBB//lib -Wl,-rpath,/media/BBB//lib -lSDL -lpthread -lpng -ldl -lm -lpthread -lz -lEGL -lGLES_CM
+/tmp/pcsx-conf--820-.c:1:21: fatal error: GLES/gl.h: No such file or directory
+ #include <GLES/gl.h>
+                     ^
+compilation terminated.
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED -I/media/BBB//include/SDL -D_GNU_SOURCE=1 -D_REENTRANT /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820- -L/media/BBB//lib -Wl,-rpath,/media/BBB//lib -lSDL -lpthread -lpng -ldl -lm -lpthread -lz -lEGL -lGLESv1_CM
+/tmp/pcsx-conf--820-.c:1:21: fatal error: GLES/gl.h: No such file or directory
+ #include <GLES/gl.h>
+                     ^
+compilation terminated.
+gcc -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -marm -DRAM_FIXED -I/media/BBB//include/SDL -D_GNU_SOURCE=1 -D_REENTRANT -c /tmp/pcsx-conf--820-.c -o /tmp/pcsx-conf--820-.o -Wno-unused-result

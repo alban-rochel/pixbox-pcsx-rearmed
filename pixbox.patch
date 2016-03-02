@@ -1,0 +1,169 @@
+diff --git a/configure b/configure
+index e401902..fa8c9ff 100755
+--- a/configure
++++ b/configure
+@@ -78,6 +78,11 @@ set_platform()
+   platform=$1
+   case "$platform" in
+   generic)
++    ram_fixed="yes"
++    drc_cache_base="yes"
++    optimize_cortexa8="yes"
++    have_arm_neon="yes"
++need_sdl="yes"
+     ;;
+   pandora)
+     sound_drivers="oss alsa"
+diff --git a/frontend/libpicofe b/frontend/libpicofe
+--- a/frontend/libpicofe
++++ b/frontend/libpicofe
+@@ -1 +1 @@
+-Subproject commit da0cc55643353ab15725194be64a3d8460fe48b1
++Subproject commit da0cc55643353ab15725194be64a3d8460fe48b1-dirty
+diff --git a/frontend/main.c b/frontend/main.c
+index 2ef5f52..6295143 100644
+--- a/frontend/main.c
++++ b/frontend/main.c
+@@ -583,7 +583,7 @@ int main(int argc, char *argv[])
+ 		// FIXME: this recovery doesn't work, just delete bad config and bail out
+ 		// SysMessage("could not load plugins, retrying with defaults\n");
+ 		set_default_paths();
+-		snprintf(path, sizeof(path), "." PCSX_DOT_DIR "%s", cfgfile_basename);
++		snprintf(path, sizeof(path), /*"."*/ PCSX_DOT_DIR "%s", cfgfile_basename);
+ 		remove(path);
+ 		SysMessage("Failed loading plugins!");
+ 		return 1;
+diff --git a/frontend/main.h b/frontend/main.h
+index 7ce9e5d..27721c6 100644
+--- a/frontend/main.h
++++ b/frontend/main.h
+@@ -26,7 +26,7 @@
+ #define MEMCARD_DIR "/.pcsx/memcards/"
+ #define PLUGINS_DIR "/.pcsx/plugins/"
+ #define PLUGINS_CFG_DIR "/.pcsx/plugins/cfg/"
+-#define PCSX_DOT_DIR "/.pcsx/"
++#define PCSX_DOT_DIR "/root/.pcsx/"
+ #define STATES_DIR "/.pcsx/sstates/"
+ #define CHEATS_DIR "/.pcsx/cheats/"
+ #define PATCHES_DIR "/.pcsx/patches/"
+diff --git a/frontend/menu.c b/frontend/menu.c
+index 199020d..d3e6b77 100644
+--- a/frontend/menu.c
++++ b/frontend/menu.c
+@@ -458,10 +458,10 @@ static char *get_cd_label(void)
+ 
+ static void make_cfg_fname(char *buf, size_t size, int is_game)
+ {
+-	if (is_game)
++	/*if (is_game)
+ 		snprintf(buf, size, "." PCSX_DOT_DIR "cfg/%.32s-%.9s.cfg", get_cd_label(), CdromId);
+-	else
+-		snprintf(buf, size, "." PCSX_DOT_DIR "%s", cfgfile_basename);
++	else*/
++		snprintf(buf, size, /*"."*/ PCSX_DOT_DIR "%s", cfgfile_basename);
+ }
+ 
+ static void keys_write_all(FILE *f);
+@@ -518,7 +518,7 @@ static int menu_do_last_cd_img(int is_get)
+ 	FILE *f;
+ 	int i, ret = -1;
+ 
+-	snprintf(path, sizeof(path), "." PCSX_DOT_DIR "lastcdimg.txt");
++	snprintf(path, sizeof(path), /*"."*/ PCSX_DOT_DIR "lastcdimg.txt");
+ 	f = fopen(path, is_get ? "r" : "w");
+ 	if (f == NULL) {
+ 		ret = -1;
+@@ -2130,6 +2130,7 @@ static int main_menu_handler(int id, int keys)
+ 			return 1;
+ 		break;
+ 	case MA_MAIN_SWAP_CD_MULTI:
++
+ 		if (swap_cd_multidisk() == 0)
+ 			return 1;
+ 		break;
+@@ -2208,12 +2209,18 @@ static menu_entry e_menu_main[] =
+ // ----------------------------
+ 
+ static void menu_leave_emu(void);
+-
++extern int SDL_QUIT();
+ void menu_loop(void)
+ {
+ 	static int warned_about_bios = 0;
+ 	static int sel = 0;
+ 
++if(getenv("NO_MENU"))
++{
++  emu_core_ask_exit();
++return;
++}
++
+ 	menu_leave_emu();
+ 
+ 	if (config_save_counter == 0) {
+@@ -2248,6 +2255,7 @@ void menu_loop(void)
+ 	in_set_config_int(0, IN_CFG_BLOCKING, 0);
+ 
+ 	menu_prepare_emu();
++
+ }
+ 
+ static int qsort_strcmp(const void *p1, const void *p2)
+diff --git a/frontend/plugin_lib.c b/frontend/plugin_lib.c
+index 72b3395..15a0173 100644
+--- a/frontend/plugin_lib.c
++++ b/frontend/plugin_lib.c
+@@ -149,7 +149,7 @@ static __attribute__((noinline)) void draw_active_chans(int vout_w, int vout_h)
+ 
+ static void print_hud(int w, int h, int xborder)
+ {
+-	if (h < 16)
++/*	if (h < 16)
+ 		return;
+ 
+ 	if (w < pl_vout_w)
+@@ -166,7 +166,7 @@ static void print_hud(int w, int h, int xborder)
+ 		print_fps(h, xborder);
+ 
+ 	if (g_opts & OPT_SHOWCPU)
+-		print_cpu_usage(w, h, xborder);
++		print_cpu_usage(w, h, xborder);*/
+ }
+ 
+ /* update scaler target size according to user settings */
+diff --git a/plugins/dfxvideo/draw.c b/plugins/dfxvideo/draw.c
+index ad3f3a1..ca9a581 100644
+--- a/plugins/dfxvideo/draw.c
++++ b/plugins/dfxvideo/draw.c
+@@ -1617,11 +1617,11 @@ void DoBufferSwap(void)
+ 	if (iMaintainAspect)
+ 		MaintainAspect(&dstx, &dsty, &_w, &_h);
+ 
+-	if (ulKeybits&KEY_SHOWFPS)	//to avoid flicker, don't paint overtop FPS bar
++/*	if (ulKeybits&KEY_SHOWFPS)	//to avoid flicker, don't paint overtop FPS bar
+ 	{
+ 		srcy = 15 * finalh / _h;
+ 		dsty += 15;
+-	}
++	}*/
+ 
+ 	XvShmPutImage(display, xv_port, window, hGC, xvi, 
+ 		0,srcy,		//src x,y
+@@ -1631,7 +1631,7 @@ void DoBufferSwap(void)
+ 		1
+ 		);
+ 
+-	if(ulKeybits&KEY_SHOWFPS) //DisplayText();               // paint menu text 
++/*	if(ulKeybits&KEY_SHOWFPS) //DisplayText();               // paint menu text 
+ 	{
+ 		if(szDebugText[0] && ((time(NULL) - tStart) < 2))
+ 		{
+@@ -1655,7 +1655,7 @@ void DoBufferSwap(void)
+ 			);
+ 
+ 		XDrawString(display,window,hGC,2,13,szDispBuf,strlen(szDispBuf));
+-	}
++	}*/
+ 	
+ 	//if(XPimage) DisplayPic();
+ 	
